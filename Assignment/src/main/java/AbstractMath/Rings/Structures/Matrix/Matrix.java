@@ -1,3 +1,7 @@
+package AbstractMath.Rings.Structures.Matrix;
+
+import AbstractMath.Rings.RingElement;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -71,14 +75,91 @@ public final class Matrix<T extends RingElement<T>> implements RingElement<Matri
         return new Builder<>(rows, columns);
     }
 
+    public int getRows() {
+        return rows;
+    }
 
+    public int getColumns() {
+        return columns;
+    }
 
+    public T getValue(int row, int column) {
+        validateCoordinates(row, column, rows, columns);
+        return values.get(row).get(column);
+    }
 
+    @Override
+    public Matrix<T> add(Matrix<T> other) {
+        requireSameSize(other);
+        List<List<T>> result = new ArrayList<>();
+        for (int row = 0; row < rows; row++) {
+            List<T> entries = new ArrayList<>();
+            for (int column = 0; column < columns; column++) {
+                entries.add(getValue(row, column).add(other.getValue(row, column)));
+            }
+            result.add(entries);
+        }
+        return new Matrix<>(rows, columns, result);
+    }
 
+    @Override
+    public Matrix<T> negate() {
+        List<List<T>> result = new ArrayList<>();
+        for (int row = 0; row < rows; row++) {
+            List<T> entries = new ArrayList<>();
+            for (int column = 0; column < columns; column++) {
+                entries.add(getValue(row, column).negate());
+            }
+            result.add(entries);
+        }
+        return new Matrix<>(rows, columns, result);
+    }
 
+    @Override
+    public Matrix<T> multiply(Matrix<T> other) {
+        requireSameSize(other);
+        List<List<T>> result = new ArrayList<>();
+        for (int row = 0; row < rows; row++) {
+            List<T> entries = new ArrayList<>();
+            for (int column = 0; column < columns; column++) {
+                T sum = getValue(row, 0).zero();
+                for (int index = 0; index < columns; index++) {
+                    T product = getValue(row, index).multiply(other.getValue(index, column));
+                    sum = sum.add(product);
+                }
+                entries.add(sum);
+            }
+            result.add(entries);
+        }
+        return new Matrix<>(rows, columns, result);
+    }
 
+    @Override
+    public Matrix<T> zero() {
+        List<List<T>> result = new ArrayList<>();
+        for (int row = 0; row < rows; row++) {
+            List<T> entries = new ArrayList<>();
+            for (int column = 0; column < columns; column++) {
+                entries.add(getValue(row, column).zero());
+            }
+            result.add(entries);
+        }
+        return new Matrix<>(rows, columns, result);
+    }
 
-
+    @Override
+    public Matrix<T> one() {
+        List<List<T>> result = new ArrayList<>();
+        for (int row = 0; row < rows; row++) {
+            List<T> entries = new ArrayList<>();
+            for (int column = 0; column < columns; column++) {
+                T entry = getValue(row, column);
+                entries.add(row == column ? entry.one() : entry.zero());
+            }
+            result.add(entries);
+        }
+        return new Matrix<>(rows, columns, result);
+    }
     /**
      * Checks the full nested type before comparing dimensions or entry values.
      * @throws ClassCastException if the other object does not have the same nested matrix type
@@ -100,6 +181,11 @@ public final class Matrix<T extends RingElement<T>> implements RingElement<Matri
             }
         }
         return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(rows, columns, values);
     }
 
     static void validateDimensions(int rows, int columns) {

@@ -1,3 +1,5 @@
+import AbstractMath.Rings.Structures.Matrix.Matrix;
+import AbstractMath.Rings.Structures.Polynomial.Polynomial;
 import AbstractMath.Rings.ZMod.Mod3;
 import AbstractMath.Rings.ZMod.Mod5;
 import AbstractMath.Rings.ZMod.Modulus;

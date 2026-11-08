@@ -1,3 +1,5 @@
+package AbstractMath.Rings;
+
 /**
  * Common operations for a ring element whose concrete type is T.
  * Implementations must obey the ring laws and return results without changing operands.
@@ -8,6 +10,16 @@
  * to check those details recursively. Generic declarations cannot be recovered after erasure.
  */
 public interface RingElement<T> {
+    T zero();
+
+    T one();
+
+    T add(T other);
+
+    T negate();
+
+    T multiply(T other);
+
     /**
      * Checks whether the other object has the same concrete class.
      * Classes with nested elements or ring configuration must extend this check
@@ -19,5 +31,4 @@ public interface RingElement<T> {
     default boolean hasSameType(Object other) {
         return other != null && getClass() == other.getClass();
     }
-
 }
